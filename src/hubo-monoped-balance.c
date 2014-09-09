@@ -76,12 +76,13 @@ int main(int argc, char **argv) {
 	time_t tdiffs = t[1].tv_sec - t[0].tv_sec;
 	printf("time elapsed: %d.%ld seconds\n", (int) tdiffs, tdiffn);
 #endif
-
+	
 	joint_pos *jp;
 #if 1
 	printf("Moving hips into position\n");
-	double hip_angle = -0.8;
+	double hip_angle = -0.14;
 	jp = (joint_pos *) malloc(sizeof(joint_pos)*4);
+	hubo_sleep(1.0, &H_state, fs);
 	jp[0].j = RHR;
 	jp[0].p = hip_angle;
 	jp[1].j = LHR;
@@ -89,30 +90,65 @@ int main(int argc, char **argv) {
 	jp[2].j = RAR;
 	jp[2].p = -1.0 * hip_angle;
 	jp[3].j = LAR;
-	jp[3].p = -1.0* hip_angle + 0.2;
-	controlled_move(jp, 4, 12, &H_state, &H_ref, fs);
-	hubo_sleep(1.5, &H_state, fs);
+	jp[3].p = -1.0 * hip_angle;
+	controlled_move(jp, 4, 8, &H_state, &H_ref, fs);
+	hubo_sleep(2.0, &H_state, fs);
 #endif
-#if 1
+#if 0
 	printf("balance on one leg\n");
-	double leg_angle_r = 2.5;
+	double leg_angle_r = -1.5;
 	jp[0].j = RHP;
-	jp[0].p = -1.0 * leg_angle_r;
+	jp[0].p = leg_angle_r;
 	jp[1].j = RKN;
-	jp[1].p = leg_angle_r;
-	controlled_move(jp, 2, 20, &H_state, &H_ref, fs);
+	jp[1].p = -2.0 * leg_angle_r;
+	jp[2].j = RAP;
+	jp[2].p = leg_angle_r;
+	controlled_move(jp, 2, 12, &H_state, &H_ref, fs);
+#else
+	printf("balance on one leg\n");
+	double leg_bend_right = -0.7;
+	jp[0].j = RHP;
+	jp[0].p = leg_bend_right;
+	jp[1].j = RKN;
+	jp[1].p = -2.0 * leg_bend_right;
+	jp[2].j = RAP;
+	jp[2].p = leg_bend_right;
+	jp[3].j = LHY;
+	jp[3].p = 0.5;
+	controlled_move(jp, 4, 8, &H_state, &H_ref, fs);
+/*	jp[0].j = RKN;
+	jp[0].p = 1.25;
+	controlled_move(jp, 1, 12, &H_state, &H_ref, fs);*/
 #endif
+//	jp = (joint_pos *) realloc(jp, sizeof(joint_pos) *5);
 	printf("squat down on one leg\n");
-	hubo_sleep(1.5, &H_state, fs);
-	jp[0].j = LHP;
-	jp[0].p = -1.0;
-	jp[1].j = LKN;
-	jp[1].p = 2.0;
-	jp[2].j = LAP;
-	jp[2].p = -1.0;
-	controlled_move(jp, 3, 10, &H_state, &H_ref, fs);
-	
-
+		//H_ref.ref[LHR] = -.15
+		hubo_sleep(1.5, &H_state, fs);
+		while(1){
+			double leg_bend_left = -0.4;
+			H_ref.ref[LHP] = leg_bend_left * 0.67;
+			H_ref.ref[LKN] = -2.0 * leg_bend_left * 0.67;
+			H_ref.ref[LAP] = leg_bend_left * 0.67;
+			ach_put( &chan_hubo_ref, &H_ref, sizeof(H_ref));
+			printf("Timestamp top: %lf\n", H_state.time);
+			hubo_sleep(0.25, &H_state, fs);
+			H_ref.ref[LHP] = leg_bend_left;
+			H_ref.ref[LKN] = -2.0 * leg_bend_left;
+			H_ref.ref[LAP] = leg_bend_left;
+			ach_put( &chan_hubo_ref, &H_ref, sizeof(H_ref));
+			hubo_sleep(0.25, &H_state, fs);
+			printf("Timestamp bottom: %lf\n", H_state.time);
+			H_ref.ref[LHP] = leg_bend_left * 0.33;
+			H_ref.ref[LKN] = -1.0 * leg_bend_left * 0.33;
+			H_ref.ref[LAP] = leg_bend_left * 0.33;
+			ach_put( &chan_hubo_ref, &H_ref, sizeof(H_ref));
+			hubo_sleep(0.25, &H_state, fs);
+			H_ref.ref[LHP] = 0.0;
+			H_ref.ref[LKN] = 0.0;
+			H_ref.ref[LAP] = 0.0;
+			ach_put( &chan_hubo_ref, &H_ref, sizeof(H_ref));
+			hubo_sleep(0.25, &H_state, fs);
+		}
 #if 0
     /* Set Left Elbow Bend (LEB) and Right Shoulder Pitch (RSP) to  -0.2 rad and 0.1 rad respectively*/
     H_ref.ref[LEB] = -0.2;

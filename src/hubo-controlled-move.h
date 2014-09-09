@@ -28,7 +28,7 @@ extern "C" {
 //put in real-time sleep function in the future
 #endif
 
-#define DEBUG_CONTROLLED_MOVE 1
+#define DEBUG_CONTROLLED_MOVE 0
 
 typedef struct {
 	int j; //joint

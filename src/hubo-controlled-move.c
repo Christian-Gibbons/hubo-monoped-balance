@@ -17,6 +17,7 @@ void controlled_move(joint_pos *p, int joint_num, int step_num, struct hubo_stat
 	double next_step[joint_num];
 	for(int i=0; i<joint_num; i++){
 		step_size[i] = (p[i].p-H_state->joint[p[i].j].pos)/step_num;
+		next_step[i] = H_state->joint[p[i].j].pos + step_size[i];
 #if DEBUG_CONTROLLED_MOVE == 1
 		printf("step_size[%d] = %lf\n", i, step_size[i]);
 #endif
@@ -30,7 +31,8 @@ void controlled_move(joint_pos *p, int joint_num, int step_num, struct hubo_stat
 	int flag = joint_num;
 	for(int j=0; j<step_num; j++){
 		for(int i=0; i<joint_num; i++){
-			next_step[i] = H_state->joint[p[i].j].ref + step_size[i];
+			//next_step[i] = H_state->joint[p[i].j].ref + step_size[i];
+			next_step[i] += step_size[i];
 			H_ref->ref[p[i].j] = next_step[i];
 #if DEBUG_CONTROLLED_MOVE == 1
 			printf("next_step[%d] = %lf\n", i, next_step[i]);

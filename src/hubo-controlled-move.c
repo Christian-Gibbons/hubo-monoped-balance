@@ -22,16 +22,10 @@ void controlled_move(joint_pos *p, int joint_num, int step_num, struct hubo_stat
 		printf("step_size[%d] = %lf\n", i, step_size[i]);
 #endif
 	}
-#if 0
-	ach_put( &chan_hubo_ref, H_ref, sizeof(*H_ref));
-	hubo_sleep(1.0, H_state, fs);
-	printf("target pos: %lf, current pos: %lf\n", next_step[0], H_state->joint[p[0].j].pos);
-#endif
 
 	int flag = joint_num;
 	for(int j=0; j<step_num; j++){
 		for(int i=0; i<joint_num; i++){
-			//next_step[i] = H_state->joint[p[i].j].ref + step_size[i];
 			next_step[i] += step_size[i];
 			H_ref->ref[p[i].j] = next_step[i];
 #if DEBUG_CONTROLLED_MOVE == 1

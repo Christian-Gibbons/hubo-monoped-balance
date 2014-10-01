@@ -67,10 +67,85 @@ int main(int argc, char **argv) {
 
 	
 	joint_pos *jp;
-	printf("Moving hips into position\n");
 	double hip_angle = -0.14;
 	jp = (joint_pos *) malloc(sizeof(joint_pos)*4);
+
 	hubo_sleep(1.0, &H_state, fs);
+
+	printf("Moving hips into position over right foot\n");
+	jp[0].j = LHR;
+	jp[0].p = -1.0 * hip_angle;
+	jp[1].j = RHR;
+	jp[1].p = -1.0 * hip_angle;
+	jp[2].j = LAR;
+	jp[2].p = hip_angle;
+	jp[3].j = RAR;
+	jp[3].p = hip_angle;
+//	controlled_move(jp, 4, 8, &H_state, &H_ref, fs);
+	controlled_move(jp, 4, 12, &H_state, &H_ref, fs);
+	hubo_sleep(3.0, &H_state, fs);
+
+	printf("balance on right leg\n");
+	double leg_bend_left = -0.8;
+	jp[0].j = LHP;
+	jp[0].p = leg_bend_left;
+	jp[1].j = LKN;
+	jp[1].p = -2.0 * leg_bend_left;
+	jp[2].j = LAP;
+	jp[2].p = leg_bend_left;
+//	jp[3].j = RHY;
+//	jp[3].p = 0.5;
+//	controlled_move(jp, 4, 8, &H_state, &H_ref, fs);
+	controlled_move(jp, 3, 8, &H_state, &H_ref, fs);
+	hubo_sleep(4.0, &H_state, fs);	
+	
+	printf("squat down on right leg\n");
+	double leg_bend_right = -0.65;
+	for(int i=0; i<2; i++){
+		jp[0].j = RHP;
+		jp[0].p = leg_bend_right;
+		jp[1].j = RKN;
+		jp[1].p = -2.0 * leg_bend_right;
+		jp[2].j = RAP;
+		jp[2].p = leg_bend_right;
+		controlled_move(jp, 3, 10, &H_state, &H_ref, fs);
+		hubo_sleep(1.0, &H_state, fs);
+		jp[0].p = -0.05;
+		jp[1].p = 0.1;
+		jp[2].p = -0.05;
+		controlled_move(jp, 3, 10, &H_state, &H_ref, fs);
+//			H_ref.ref[RHP] = -0.05;
+//			H_ref.ref[RAP] = -0.05;
+//			ach_put( &chan_hubo_ref, &H_ref, sizeof(H_ref));
+		hubo_sleep(2.0, &H_state, fs);
+	}
+	printf("Put left leg back down\n");
+	jp[0].j = LHP;
+	jp[1].j = LKN;
+	jp[2].j = LAP;
+	controlled_move(jp, 3, 10, &H_state, &H_ref, fs);
+	hubo_sleep(2.0, &H_state, fs);
+
+	printf("Back to neutral position\n");
+	jp[0].j = RHR;
+	jp[0].p = 0.0;
+	jp[1].j = LHR;
+	jp[1].p = 0.0;
+	jp[2].j = RAR;
+	jp[2].p = 0.0;
+	jp[3].j = LAR;
+	jp[3].p = 0.0;
+	controlled_move(jp, 4, 12, &H_state, &H_ref, fs);
+	hubo_sleep(4.0, &H_state, fs);
+	H_ref.ref[RHP] = 0.0;
+	H_ref.ref[RKN] = 0.0;
+	H_ref.ref[RAP] = 0.0;
+	H_ref.ref[LHP] = 0.0;
+	H_ref.ref[LKN] = 0.0;
+	H_ref.ref[LAP] = 0.0;
+	ach_put(&chan_hubo_ref, &H_ref, sizeof(H_ref));
+
+	printf("Moving hips into position over left foot\n");
 	jp[0].j = RHR;
 	jp[0].p = hip_angle;
 	jp[1].j = LHR;
@@ -79,25 +154,28 @@ int main(int argc, char **argv) {
 	jp[2].p = -1.0 * hip_angle;
 	jp[3].j = LAR;
 	jp[3].p = -1.0 * hip_angle;
-	controlled_move(jp, 4, 8, &H_state, &H_ref, fs);
-	hubo_sleep(2.0, &H_state, fs);
+//	controlled_move(jp, 4, 8, &H_state, &H_ref, fs);
+	controlled_move(jp, 4, 12, &H_state, &H_ref, fs);
+	hubo_sleep(4.0, &H_state, fs);
 
-	printf("balance on one leg\n");
-	double leg_bend_right = -0.7;
+	printf("balance on left leg\n");
+	leg_bend_right = -0.8;
 	jp[0].j = RHP;
 	jp[0].p = leg_bend_right;
 	jp[1].j = RKN;
 	jp[1].p = -2.0 * leg_bend_right;
 	jp[2].j = RAP;
 	jp[2].p = leg_bend_right;
-	jp[3].j = LHY;
-	jp[3].p = 0.5;
-	controlled_move(jp, 4, 8, &H_state, &H_ref, fs);
-
-	printf("squat down on one leg\n");
-		hubo_sleep(1.5, &H_state, fs);
+//	jp[3].j = LHY;
+//	jp[3].p = 0.5;
+//	controlled_move(jp, 4, 8, &H_state, &H_ref, fs);
+	controlled_move(jp, 3, 8, &H_state, &H_ref, fs);
+	hubo_sleep(4.0, &H_state, fs);	
+	printf("squat down on left leg\n");
+	
+#if 0
 		while(1){
-			double leg_bend_left = -0.4;
+			double leg_bend_left = -0.65;
 			H_ref.ref[LHP] = leg_bend_left * 0.67;
 			H_ref.ref[LKN] = -2.0 * leg_bend_left * 0.67;
 			H_ref.ref[LAP] = leg_bend_left * 0.67;
@@ -121,4 +199,44 @@ int main(int argc, char **argv) {
 			ach_put( &chan_hubo_ref, &H_ref, sizeof(H_ref));
 			hubo_sleep(0.25, &H_state, fs);
 		}
+#else
+
+	leg_bend_left = -0.65;
+	for(int i=0; i<2; i++){
+		jp[0].j = LHP;
+		jp[0].p = leg_bend_left;
+		jp[1].j = LKN;
+		jp[1].p = -2.0 * leg_bend_left;
+		jp[2].j = LAP;
+		jp[2].p = leg_bend_left;
+		controlled_move(jp, 3, 10, &H_state, &H_ref, fs);
+		hubo_sleep(1.0, &H_state, fs);
+		jp[0].p = -0.05;
+		jp[1].p = 0.1;
+		jp[2].p = -0.05;
+		controlled_move(jp, 3, 10, &H_state, &H_ref, fs);
+//			H_ref.ref[LHP] = -0.05;
+//			H_ref.ref[LAP] = -0.05;
+//			ach_put( &chan_hubo_ref, &H_ref, sizeof(H_ref));
+		hubo_sleep(2.0, &H_state, fs);
+	}
+#endif
+	printf("Put right leg back down\n");
+	jp[0].j = RHP;
+	jp[1].j = RKN;
+	jp[2].j = RAP;
+	controlled_move(jp, 3, 10, &H_state, &H_ref, fs);
+	hubo_sleep(2.0, &H_state, fs);
+
+	printf("Back to neutral position\n");
+	jp[0].j = RHR;
+	jp[0].p = 0.0;
+	jp[1].j = LHR;
+	jp[1].p = 0.0;
+	jp[2].j = RAR;
+	jp[2].p = 0.0;
+	jp[3].j = LAR;
+	jp[3].p = 0.0;
+	controlled_move(jp, 4, 12, &H_state, &H_ref, fs);
+
 }

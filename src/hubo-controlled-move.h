@@ -28,14 +28,14 @@ extern "C" {
 //put in real-time sleep function in the future
 #endif
 
-#define DEBUG_CONTROLLED_MOVE 0
+#define DEBUG_CONTROLLED_MOVE 1
 
 typedef struct {
 	int j; //joint
 	double p; //position
 } joint_pos;
 
-void controlled_move(joint_pos *p, int joint_num, int step_num, struct hubo_state *H_state, struct hubo_ref *H_ref, size_t fs);
+void controlled_move(joint_pos *p, int joint_num, int step_num, struct hubo_state *H_state, struct hubo_ref *H_ref, size_t fs, char chan_put);
 
 #ifdef __cplusplus
 }

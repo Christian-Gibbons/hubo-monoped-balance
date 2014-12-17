@@ -7,17 +7,17 @@ Implementation strategy: The upper body and lower body are being asked to carry 
 For reasons I have been unable to determine, Hubo does not move every joint that it is supposed to.  The lower-body algorithm calls for Hubo to push it's hips over one foot, however only the right leg and ankle move while the left leg and ankle remain stationary.  I enabled the debugging mode in my controlled move algorithm, and it confirms that the H_ref buffer is being updated for all the necessary joints before being put on the ach channel, so I don't know where else to try to debug the problem.  Due to this bug, Hubo is unable to balance on one foot and tips over.
 
 Instructions for use
-compiling: navigate to base directory "hubo-monoped-balance" and run:  
-	$ make  
-	$ make chan  
-Start Hubo simulator:  
-	$ hubo-ach sim openhubo physics  
-run upper body process:  
-	$ ./hubo-hello-world  
-run lower body process:  
-	$ ./hubo-monoped-balance  
+compiling: navigate to base directory "hubo-monoped-balance" and run:
+	$ make
+	$ make chan
+Start Hubo simulator:
+	$ hubo-ach sim openhubo physics
+run upper body process:
+	$ ./hubo-hello-world
+run lower body process:
+	$ ./hubo-monoped-balance
 
-To clean up source files:  
-	$ make clean  
-To clean up interprocess channel:  
+To clean up source files:
+	$ make clean
+To clean up interprocess channel:
 	$ make chan_clean

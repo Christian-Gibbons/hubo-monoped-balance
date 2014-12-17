@@ -38,6 +38,8 @@ void controlled_move(joint_pos *p, int joint_num, int step_num, struct hubo_stat
 				OUT:;
 			}
 		}
+	}
+	for(int j=0; j<step_num; j++){
 		for(int i=0; i<joint_num; i++){
 			next_step[i] += step_size[i];
 			H_ref->ref[p[i].j] = next_step[i];
@@ -49,3 +51,4 @@ void controlled_move(joint_pos *p, int joint_num, int step_num, struct hubo_stat
 		hubo_sleep(0.05, H_state, fs);
 	}
 }
+
